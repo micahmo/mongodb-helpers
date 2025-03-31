@@ -6,13 +6,25 @@ using MongoDB.Driver;
 
 namespace MongoDBHelpers
 {
+    /// <summary>
+    /// Interface which lets a class indicate that it has an ID which can be used to store it in MongoDB
+    /// </summary>
     public interface IHasIdentifier<T>
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
         T Id { get; init; }
     }
 
+    /// <summary>
+    /// Extensions, mostly on <see cref="IMongoCollection"/>, to make queries/update easier.
+    /// </summary>
     public static class MongoDbExtensions
     {
+        /// <summary>
+        /// Insert or update the given <paramref name="obj"/> into the <paramref name="collection"/>.
+        /// </summary>
         public static async Task<bool> UpsertAsync<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
             where TObject : IHasIdentifier<TId>
         {
@@ -33,6 +45,9 @@ namespace MongoDBHelpers
             }
         }
 
+        /// <summary>
+        /// Insert or update the given <paramref name="obj"/> into the <paramref name="collection"/>.
+        /// </summary>
         [Obsolete("Use in favor of UpsertAsync if possible")]
         public static bool Upsert<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
             where TObject : IHasIdentifier<TId>
@@ -54,40 +69,63 @@ namespace MongoDBHelpers
             }
         }
 
+        /// <summary>
+        /// Delete an object with the given  <paramref name="id"/> from the <paramref name="collection"/>.
+        /// </summary>
         public static async Task DeleteAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
             where TObject : IHasIdentifier<TId>
         {
             await collection.DeleteOneAsync(Builders<TObject>.Filter.Eq("_id", id));
         }
 
-        // Note that this replaces the whole object, so it's not good for limited property list updated
+        /// <summary>
+        /// Update the given <paramref name="obj"/> into the <paramref name="collection"/>.
+        /// </summary>
+        /// <remarks>
+        /// Note that this replaces the whole object, so it's not good for limited property list updated
+        /// </remarks>
         public static async Task UpdateAsync<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
             where TObject : IHasIdentifier<TId>
         {
             await collection.ReplaceOneAsync(Builders<TObject>.Filter.Eq("_id", obj.Id), obj);
         }
 
+        /// <summary>
+        /// Find all objects in the given <paramref name="collection"/>.
+        /// </summary>
         [Obsolete("Use in favor of FindAllAsync if possible")]
         public static List<TObject> FindAll<TObject>(this IMongoCollection<TObject> collection)
         {
             return collection.Find(_ => true).ToList();
         }
 
+        /// <summary>
+        /// Find all objects in the given <paramref name="collection"/>.
+        /// </summary>
         public static async Task<List<TObject>> FindAllAsync<TObject>(this IMongoCollection<TObject> collection)
         {
             return await (await collection.FindAsync(_ => true)).ToListAsync();
         }
 
+        /// <summary>
+        /// Find an object with the given <paramref name="id"/> in the given <paramref name="collection"/>.
+        /// </summary>
         public static TObject? FindById<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
         {
             return collection.Find(Builders<TObject>.Filter.Eq("_id", id)).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Find an object with the given <paramref name="id"/> in the given <paramref name="collection"/>.
+        /// </summary>
         public static async Task<TObject?> FindByIdAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
         {
             return (await collection.FindAsync(Builders<TObject>.Filter.Eq("_id", id))).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Find an object that matches the given <paramref name="filter"/> in the given <paramref name="collection"/>.
+        /// </summary>
         public static async Task<List<TObject>> FindByConditionAsync<TObject>(this IMongoCollection<TObject> collection, Expression<Func<TObject, bool>> filter)
         {
             return await (await collection.FindAsync<TObject>(filter)).ToListAsync();

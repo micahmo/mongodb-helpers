@@ -4,10 +4,19 @@ using MongoDB.Driver;
 
 namespace MongoDBHelpers
 {
+    /// <summary>
+    /// This class represents the engine that can be used to interact with MongoDB
+    /// </summary>
     public class DatabaseEngine
     {
+        /// <summary>
+        /// The MongoDB connection string. Set before accessing the <see cref="DatabaseInstance"/>.
+        /// </summary>
         public static string? ConnectionString { get; set; }
 
+        /// <summary>
+        /// The MongoDB instance. Set the <see cref="ConnectionString"/> before accessing.
+        /// </summary>
         public static IMongoDatabase DatabaseInstance
         {
             get
@@ -23,6 +32,9 @@ namespace MongoDBHelpers
         }
         private static IMongoDatabase? _databaseInstance;
 
+        /// <summary>
+        /// Check whether we can connect to MongoDB with the given <see cref="ConnectionString"/>
+        /// </summary>
         public static string? TestConnection()
         {
             try
@@ -37,6 +49,9 @@ namespace MongoDBHelpers
             }
         }
 
+        /// <summary>
+        /// Check whether we can connect to MongoDB with the given <see cref="ConnectionString"/>
+        /// </summary>
         public static async Task<string?> TestConnectionAsync()
         {
             string? result = default;
@@ -61,6 +76,9 @@ namespace MongoDBHelpers
             return result;
         }
 
+        /// <summary>
+        /// Reset the instance so we can reconnect with a new <see cref="ConnectionString"/>
+        /// </summary>
         public static void Reset()
         {
             _databaseInstance = null;
