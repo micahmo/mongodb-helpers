@@ -8,7 +8,7 @@ namespace MongoDBHelpers
     {
         public static string? ConnectionString { get; set; }
 
-        private static IMongoDatabase DatabaseInstance
+        public static IMongoDatabase DatabaseInstance
         {
             get
             {
