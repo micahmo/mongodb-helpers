@@ -1,7 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>mdm.MongoDBHelpers</PackageId>
+    <Authors>Micah Morrison</Authors>
+    <Description>Wrappers and helpers for using MongoDB in C#</Description>
+    <Summary>Wrappers and helpers for using MongoDB in C#</Summary>
+    <RepositoryUrl>https://github.com/micahmo/mongodb-helpers</RepositoryUrl>
+
     <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
