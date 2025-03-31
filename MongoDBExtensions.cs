@@ -78,12 +78,12 @@ namespace MongoDBHelpers
             return await (await collection.FindAsync(_ => true)).ToListAsync();
         }
 
-        public static TObject FindById<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
+        public static TObject? FindById<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
         {
             return collection.Find(Builders<TObject>.Filter.Eq("_id", id)).FirstOrDefault();
         }
 
-        public static async Task<TObject> FindByIdAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
+        public static async Task<TObject?> FindByIdAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
         {
             return (await collection.FindAsync(Builders<TObject>.Filter.Eq("_id", id))).FirstOrDefault();
         }
