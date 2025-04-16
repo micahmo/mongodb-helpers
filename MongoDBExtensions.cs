@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -129,6 +130,17 @@ namespace MongoDBHelpers
         public static async Task<List<TObject>> FindByConditionAsync<TObject>(this IMongoCollection<TObject> collection, Expression<Func<TObject, bool>> filter)
         {
             return await (await collection.FindAsync<TObject>(filter)).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns a collection based on a distinct field as specified in <paramref name="distinct"/>, and ordered by <paramref name="orderedBy"/>.
+        /// </summary>
+        public static async Task<List<TObject>> FindDistinctOrderedByDescending<TObject, TKey>(this IMongoCollection<TObject> collection, Expression<Func<TObject, object>> orderedBy, Expression<Func<TObject, TKey>> distinct)
+        {
+            return await collection.Aggregate() // Create an aggregate collection (where we can chain expressions)
+                .SortByDescending(orderedBy) // Order as the user desires
+                .Group(distinct, g => g.First()) // Create a group based on a field, and then select the first item in the group
+                .ToListAsync();
         }
     }
 }
