@@ -42,7 +42,7 @@ namespace MongoDBHelpers
                 // (since we might have generated the id programmatically)
                 // Therefore, we need to do an upsert (rather than something like a replace).
                 ReplaceOneResult? result = await collection.ReplaceOneAsync(o => o.Id!.Equals(obj.Id), obj, new ReplaceOptions { IsUpsert = true });
-                return result.ModifiedCount > 0;
+                return result.MatchedCount > 0 || result.UpsertedId != null;
             }
         }
 
@@ -66,7 +66,7 @@ namespace MongoDBHelpers
                 // (since we might have generated the id programmatically)
                 // Therefore, we need to do an upsert (rather than something like a replace).
                 var result = collection.ReplaceOne(o => o.Id!.Equals(obj.Id), obj, new ReplaceOptions { IsUpsert = true });
-                return result.ModifiedCount > 0;
+                return result.MatchedCount > 0 || result.UpsertedId != null;
             }
         }
 
