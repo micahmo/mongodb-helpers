@@ -36,7 +36,7 @@ namespace MongoDBHelpers
         /// This is NOT a mark of success.
         /// </returns>
         public static async Task<bool> UpsertAsync<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
-            where TObject : IHasIdentifier<TId>
+            where TObject : IHasIdentifier<TId, TObject>
         {
             if (EqualityComparer<TId>.Default.Equals(obj.Id, default))
             {
@@ -64,7 +64,7 @@ namespace MongoDBHelpers
         /// </returns>
         [Obsolete("Use in favor of UpsertAsync if possible")]
         public static bool Upsert<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
-            where TObject : IHasIdentifier<TId>
+            where TObject : IHasIdentifier<TId, TObject>
         {
             if (EqualityComparer<TId>.Default.Equals(obj.Id, default))
             {
@@ -87,7 +87,7 @@ namespace MongoDBHelpers
         /// Delete an object with the given  <paramref name="id"/> from the <paramref name="collection"/>.
         /// </summary>
         public static async Task<DeleteResult> DeleteAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
-            where TObject : IHasIdentifier<TId>
+            where TObject : IHasIdentifier<TId, TObject>
         {
             return await collection.DeleteOneAsync(Builders<TObject>.Filter.Eq("_id", id));
         }
@@ -99,7 +99,7 @@ namespace MongoDBHelpers
         /// Note that this replaces the whole object, so it's not good for limited property list updated
         /// </remarks>
         public static async Task UpdateAsync<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
-            where TObject : IHasIdentifier<TId>
+            where TObject : IHasIdentifier<TId, TObject>
         {
             await collection.ReplaceOneAsync(Builders<TObject>.Filter.Eq("_id", obj.Id), obj);
         }
