@@ -10,12 +10,17 @@ namespace MongoDBHelpers
     /// <summary>
     /// Interface which lets a class indicate that it has an ID which can be used to store it in MongoDB
     /// </summary>
-    public interface IHasIdentifier<T>
+    public interface IHasIdentifier<TId, out TSelf> where TSelf : IHasIdentifier<TId, TSelf>
     {
         /// <summary>
         /// The identifier
         /// </summary>
-        T Id { get; init; }
+        TId Id { get; }
+
+        /// <summary>
+        /// Returns this object with the <see cref="Id"/> set to <paramref name="id"/>.
+        /// </summary>
+        TSelf WithId(TId id);
     }
 
     /// <summary>
