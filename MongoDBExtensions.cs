@@ -26,6 +26,10 @@ namespace MongoDBHelpers
         /// <summary>
         /// Insert or update the given <paramref name="obj"/> into the <paramref name="collection"/>.
         /// </summary>
+        /// <returns>
+        /// True if the object was inserted or updated, false if it already existed and there were no updates to make.
+        /// This is NOT a mark of success.
+        /// </returns>
         public static async Task<bool> UpsertAsync<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
             where TObject : IHasIdentifier<TId>
         {
@@ -42,13 +46,17 @@ namespace MongoDBHelpers
                 // (since we might have generated the id programmatically)
                 // Therefore, we need to do an upsert (rather than something like a replace).
                 ReplaceOneResult? result = await collection.ReplaceOneAsync(o => o.Id!.Equals(obj.Id), obj, new ReplaceOptions { IsUpsert = true });
-                return result.MatchedCount > 0 || result.UpsertedId != null;
+                return result.ModifiedCount > 0;
             }
         }
 
         /// <summary>
         /// Insert or update the given <paramref name="obj"/> into the <paramref name="collection"/>.
         /// </summary>
+        /// <returns>
+        /// True if the object was inserted or updated, false if it already existed and there were no updates to make.
+        /// This is NOT a mark of success.
+        /// </returns>
         [Obsolete("Use in favor of UpsertAsync if possible")]
         public static bool Upsert<TObject, TId>(this IMongoCollection<TObject> collection, TObject obj)
             where TObject : IHasIdentifier<TId>
@@ -66,7 +74,7 @@ namespace MongoDBHelpers
                 // (since we might have generated the id programmatically)
                 // Therefore, we need to do an upsert (rather than something like a replace).
                 var result = collection.ReplaceOne(o => o.Id!.Equals(obj.Id), obj, new ReplaceOptions { IsUpsert = true });
-                return result.MatchedCount > 0 || result.UpsertedId != null;
+                return result.ModifiedCount > 0;
             }
         }
 
