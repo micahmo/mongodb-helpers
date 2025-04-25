@@ -81,10 +81,10 @@ namespace MongoDBHelpers
         /// <summary>
         /// Delete an object with the given  <paramref name="id"/> from the <paramref name="collection"/>.
         /// </summary>
-        public static async Task DeleteAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
+        public static async Task<DeleteResult> DeleteAsync<TObject, TId>(this IMongoCollection<TObject> collection, TId id)
             where TObject : IHasIdentifier<TId>
         {
-            await collection.DeleteOneAsync(Builders<TObject>.Filter.Eq("_id", id));
+            return await collection.DeleteOneAsync(Builders<TObject>.Filter.Eq("_id", id));
         }
 
         /// <summary>
