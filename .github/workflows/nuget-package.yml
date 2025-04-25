@@ -39,3 +39,9 @@ jobs:
           dotnet nuget push "./nupkg/*.nupkg" \
             --source $NUGET_SERVER \
             --api-key $NUGET_API_KEY
+
+      - name: Print Summary
+        run: |
+          PACKAGE_VERSION="1.0.${{ github.run_number }}"
+          echo "### Successfully pushed NuGet package version $PACKAGE_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "[View Package](https://github.com/micahmo/ServerStatusBot/pkgs/nuget/mdm.ServerStatusBot.Definitions)" >> $GITHUB_STEP_SUMMARY
