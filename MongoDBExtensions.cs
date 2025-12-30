@@ -127,12 +127,19 @@ namespace MongoDBHelpers
         /// <summary>
         /// Returns a collection based on a distinct field as specified in <paramref name="distinct"/>, and ordered by <paramref name="orderedBy"/>.
         /// </summary>
-        public static async Task<List<TObject>> FindDistinctOrderedByDescending<TObject, TKey>(this IMongoCollection<TObject> collection, Expression<Func<TObject, object>> orderedBy, Expression<Func<TObject, TKey>> distinct)
+        public static async Task<List<TObject>> FindDistinctOrderedByDescending<TObject, TKey>(this IMongoCollection<TObject> collection, Expression<Func<TObject, object>> orderedBy, Expression<Func<TObject, TKey>> distinct, Expression<Func<TObject, object>>? thenOrderBy = null)
         {
-            return await collection.Aggregate() // Create an aggregate collection (where we can chain expressions)
+            IOrderedAggregateFluent<TObject> pipeline = collection.Aggregate() // Create an aggregate collection (where we can chain expressions)
                 .SortByDescending(orderedBy) // Order as the user desires
-                .Group(distinct, g => g.First()) // Create a group based on a field, and then select the first item in the group
-                .ToListAsync();
+                .Group(distinct, g => g.First()) // Group by distinct field and take the first item from each group
+                .SortByDescending(orderedBy); // Re-apply sort after grouping (grouping doesn't preserve order)
+
+            if (thenOrderBy != null)
+            {
+                pipeline = pipeline.ThenBy(thenOrderBy); // Apply secondary sort to ensure stable ordering when primary values are equal
+            }
+
+            return await pipeline.ToListAsync();
         }
     }
 }
